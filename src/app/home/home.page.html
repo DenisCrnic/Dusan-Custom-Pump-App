@@ -1,26 +1,147 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{app_name}}</ion-title>
+  <ion-toolbar color="">
+    <ion-buttons slot="start"> <ion-menu-button></ion-menu-button></ion-buttons>
+    <ion-title slot="start">{{app_name}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{app_name}}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-card id="esp32_card" color="light">
+    <ion-card-header>
+      <ion-card-title
+        ><ion-icon
+          class="icon ion-ios-clock-outline"
+          id="esp32_status"
+          color="danger"
+          name="radio-button-on-outline"
+        ></ion-icon
+        ><span class="text">Pumpa</span>
+      </ion-card-title>
+    </ion-card-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>
-      Start with Ionic
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://ionicframework.com/docs/components"
-        >UI Components</a
-      >
-    </p>
-  </div>
+    <ion-card-content
+      ><div id="esp32_alert" class="ion-padding-bottom">{{ESP32_alert}}</div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card id="relay_card" hidden>
+    <ion-card-header>
+      <ion-card-title>Stikalo 1 </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Nastavljanje časovnih mej
+      <ion-item>
+        <ion-range
+          #interval_1
+          [(ngModel)]="sys_interface.time1"
+          [min]="interval_min"
+          [max]="sys_interface2.a1"
+          [value]="sys_interface.time1"
+          step="1"
+          pin
+          snaps="true"
+          (ionChange)="onTimeChanged(interval_1.value, -1, -1)"
+          ><ion-label slot="start" size="small">{{interval_min}}:00</ion-label>
+          <ion-label slot="end" size="small"
+            >{{sys_interface2.a1}}:00</ion-label
+          ></ion-range
+        >
+      </ion-item>
+      <ion-item>
+        <ion-range
+          #interval_2
+          [(ngModel)]="sys_interface.time2"
+          [min]="sys_interface2.a2"
+          [max]="sys_interface2.a3"
+          [value]="sys_interface.time2"
+          step="1"
+          pin
+          snaps="true"
+          (ionChange)="onTimeChanged( -1, interval_2.value, -1)"
+          ><ion-label slot="start" size="small"
+            >{{sys_interface2.a2}}:00</ion-label
+          >
+          <ion-label slot="end" size="small"
+            >{{sys_interface2.a3}}:00</ion-label
+          ></ion-range
+        >
+      </ion-item>
+      <ion-item>
+        <ion-range
+          #interval_3
+          [(ngModel)]="sys_interface.time3"
+          [min]="sys_interface2.a4"
+          [max]="interval_max"
+          [value]="sys_interface.time3"
+          step="1"
+          pin
+          snaps="true"
+          (ionChange)="onTimeChanged(-1, -1, interval_3.value)"
+          ><ion-label slot="start" size="small"
+            >{{sys_interface2.a1}}:00</ion-label
+          >
+          <ion-label slot="end" size="small"
+            >{{interval_max}}:00</ion-label
+          ></ion-range
+        >
+      </ion-item>
+    </ion-card-content>
+    <ion-card-content>
+      Nastavljanje časa neaktivnosti
+      <ion-item>
+        <ion-label>
+          Interval 1: od {{ interval_3.value }}ih do {{ interval_1.value }}ih
+        </ion-label>
+        <ion-range
+          [(ngModel)]="sys_interface.offTime1"
+          min="0"
+          max="15"
+          [value]="sys_interface.offTime1"
+          step="1"
+          pin
+          snaps="true"
+          ><ion-label slot="start" size="small">0</ion-label>
+          <ion-label slot="end" size="small">15</ion-label></ion-range
+        >
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Interval 2: od {{ interval_1.value }}ih do {{ interval_2.value }}ih
+        </ion-label>
+        <ion-range
+          [(ngModel)]="sys_interface.offTime2"
+          min="0"
+          max="15"
+          [value]="sys_interface.offTime2"
+          step="1"
+          pin
+          snaps="true"
+          ><ion-label slot="start" size="small">0</ion-label>
+          <ion-label slot="end" size="small">15</ion-label></ion-range
+        >
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Interval 3: od {{ interval_2.value }}ih do {{ interval_3.value }}ih
+        </ion-label>
+        <ion-range
+          [(ngModel)]="sys_interface.offTime3"
+          min="0"
+          max="15"
+          [value]="sys_interface.offTime3"
+          step="1"
+          pin
+          snaps="true"
+          ><ion-label slot="start" size="small">0</ion-label>
+          <ion-label slot="end" size="small">15</ion-label></ion-range
+        >
+      </ion-item>
+      <ion-button (click)="updateValues()" expand="full">Potrdi</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+
+<!-- TODO: -Pofiksat sliderje (odpraviti None vrednosti) 
+          - esp se pri parametrizaciji ustavi (?)
+          - DS3231 implementacij
+          -
+        -->
