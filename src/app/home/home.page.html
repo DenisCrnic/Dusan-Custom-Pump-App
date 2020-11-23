@@ -30,64 +30,54 @@
     <ion-card-content>
       Nastavljanje časovnih mej
       <ion-item>
-        <ion-range
+        <ion-select
           #interval_1
-          [(ngModel)]="sys_interface.time1"
-          [min]="sys_interface2.a0"
-          [max]="sys_interface2.a1"
           [value]="sys_interface.time1"
-          step="1"
-          pin
-          snaps="true"
-          (ionChange)="onTimeChanged(interval_1.value, -1, -1)"
-          ><ion-label slot="start" size="small"
-            >{{sys_interface2.a0}}:00</ion-label
-          >
-          <ion-label slot="end" size="small"
-            >{{sys_interface2.a1}}:00</ion-label
-          ></ion-range
+          okText="Potrdi"
+          cancelText="Prekliči"
+          (ionChange)="onTimeChanged(interval_1.value, interval_2.value, interval_3.value)"
         >
+          <ion-select-option
+            *ngFor="let hour of sys_interface2.a0"
+            [value]="hour"
+            >{{hour}}</ion-select-option
+          >
+        </ion-select>
       </ion-item>
+
       <ion-item>
-        <ion-range
+        <ion-select
           #interval_2
-          [(ngModel)]="sys_interface.time2"
-          [min]="sys_interface2.a2"
-          [max]="sys_interface2.a3"
           [value]="sys_interface.time2"
-          step="1"
-          pin
-          snaps="true"
-          (ionChange)="onTimeChanged( -1, interval_2.value, -1)"
-          ><ion-label slot="start" size="small"
-            >{{sys_interface2.a2}}:00</ion-label
-          >
-          <ion-label slot="end" size="small"
-            >{{sys_interface2.a3}}:00</ion-label
-          ></ion-range
+          okText="Potrdi"
+          cancelText="Prekliči"
+          (ionChange)="onTimeChanged(interval_1.value, interval_2.value, interval_3.value)"
         >
+          <ion-select-option
+            *ngFor="let hour of sys_interface2.a1"
+            [value]="hour"
+            >{{hour}}</ion-select-option
+          >
+        </ion-select>
       </ion-item>
+
       <ion-item>
-        <ion-range
+        <ion-select
           #interval_3
-          [(ngModel)]="sys_interface.time3"
-          [min]="sys_interface2.a4"
-          [max]="sys_interface2.a5"
           [value]="sys_interface.time3"
-          step="1"
-          pin
-          snaps="true"
-          (ionChange)="onTimeChanged(-1, -1, interval_3.value)"
-          ><ion-label slot="start" size="small"
-            >{{sys_interface2.a4}}:00</ion-label
-          >
-          <ion-label slot="end" size="small"
-            >{{sys_interface2.a5}}:00</ion-label
-          ></ion-range
+          okText="Potrdi"
+          cancelText="Prekliči"
+          (ionChange)="onTimeChanged(interval_1.value, interval_2.value, interval_3.value)"
         >
+          <ion-select-option
+            *ngFor="let hour of sys_interface2.a2"
+            [value]="hour"
+            >{{hour}}</ion-select-option
+          >
+        </ion-select>
       </ion-item>
     </ion-card-content>
-    <ion-card-content>
+    <!-- <ion-card-content>
       Nastavljanje časa neaktivnosti
       <ion-item>
         <ion-label>
@@ -138,7 +128,7 @@
         >
       </ion-item>
       <ion-button (click)="updateValues()" expand="full">Potrdi</ion-button>
-    </ion-card-content>
+    </ion-card-content> -->
   </ion-card>
 </ion-content>
 
