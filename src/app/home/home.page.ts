@@ -165,28 +165,6 @@ export class HomePage {
   }
 
   onTimeChanged(time1: number = -1, time2: number = -1, time3: number = -1) {
-    // if (time1 > 0) this.sys_interface2.a2 = time1 + 1;
-    // if (
-    //   time2 > 1 &&
-    //   time2 - 1 > this.sys_interface.time1 &&
-    //   time2 + 1 < this.sys_interface.time3
-    // ) {
-    //   this.sys_interface2.a1 = time2 - 1;
-    //   if (time2 == 2) this.sys_interface2.a4 = time2 + 2;
-    //   else this.sys_interface2.a4 = time2 + 1;
-    // }
-    // if (time3 > 3 && time3 < 23) {
-    //   this.sys_interface2.a3 = time3 - 1;
-    // }
-    // if (time1 > 0) {
-    //   this.sys_interface2.a2 = time1 + 1;
-    // } else if (time2 > 0) {
-    //   this.sys_interface2.a1 = time2 - 1;
-    //   this.sys_interface2.a4 = time2 + 1;
-    // } else if (time3 > 0) {
-    //   this.sys_interface2.a3 = time3 - 1;
-    // }
-
     console.log(time1);
     console.log(time2);
     console.log(time3);
