@@ -33,14 +33,16 @@
         <ion-range
           #interval_1
           [(ngModel)]="sys_interface.time1"
-          [min]="interval_min"
+          [min]="sys_interface2.a0"
           [max]="sys_interface2.a1"
           [value]="sys_interface.time1"
           step="1"
           pin
           snaps="true"
           (ionChange)="onTimeChanged(interval_1.value, -1, -1)"
-          ><ion-label slot="start" size="small">{{interval_min}}:00</ion-label>
+          ><ion-label slot="start" size="small"
+            >{{sys_interface2.a0}}:00</ion-label
+          >
           <ion-label slot="end" size="small"
             >{{sys_interface2.a1}}:00</ion-label
           ></ion-range
@@ -70,17 +72,17 @@
           #interval_3
           [(ngModel)]="sys_interface.time3"
           [min]="sys_interface2.a4"
-          [max]="interval_max"
+          [max]="sys_interface2.a5"
           [value]="sys_interface.time3"
           step="1"
           pin
           snaps="true"
           (ionChange)="onTimeChanged(-1, -1, interval_3.value)"
           ><ion-label slot="start" size="small"
-            >{{sys_interface2.a1}}:00</ion-label
+            >{{sys_interface2.a4}}:00</ion-label
           >
           <ion-label slot="end" size="small"
-            >{{interval_max}}:00</ion-label
+            >{{sys_interface2.a5}}:00</ion-label
           ></ion-range
         >
       </ion-item>
@@ -89,7 +91,7 @@
       Nastavljanje časa neaktivnosti
       <ion-item>
         <ion-label>
-          Interval 1: od {{ interval_3.value }}ih do {{ interval_1.value }}ih
+          Interval 1: od {{ interval_3.value }} h do {{ interval_1.value }} h
         </ion-label>
         <ion-range
           [(ngModel)]="sys_interface.offTime1"
@@ -105,7 +107,7 @@
       </ion-item>
       <ion-item>
         <ion-label>
-          Interval 2: od {{ interval_1.value }}ih do {{ interval_2.value }}ih
+          Interval 2: od {{ interval_1.value }} h do {{ interval_2.value }} h
         </ion-label>
         <ion-range
           [(ngModel)]="sys_interface.offTime2"
@@ -121,7 +123,7 @@
       </ion-item>
       <ion-item>
         <ion-label>
-          Interval 3: od {{ interval_2.value }}ih do {{ interval_3.value }}ih
+          Interval 3: od {{ interval_2.value }} h do {{ interval_3.value }} h
         </ion-label>
         <ion-range
           [(ngModel)]="sys_interface.offTime3"

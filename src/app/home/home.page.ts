@@ -21,10 +21,12 @@ interface System {
 }
 
 interface System2 {
+  a0: number;
   a1: number;
   a2: number;
   a3: number;
   a4: number;
+  a5: number;
 }
 
 @Component({
@@ -35,19 +37,25 @@ interface System2 {
 export class HomePage {
   app_name: string = "Dušan Custom Pump App";
   currentTime: Date;
-  interval_min: number = 0;
-  interval_max: number = 24;
   time_interface: Time;
   sys_interface: System = {
-    time1: 22,
-    time2: 23,
-    time3: 24,
+    time1: 0,
+    time2: 0,
+    time3: 0,
     offTime1: 1,
     offTime2: 1,
     offTime3: 1,
     offTime4: 1,
   };
-  sys_interface2: System2;
+
+  sys_interface2: System2 = {
+    a0: 0,
+    a1: 0,
+    a2: 0,
+    a3: 0,
+    a4: 0,
+    a5: 0,
+  };
 
   wsServerUrl: string = "ws://192.168.4.1";
   wsServerPort: string = "80";
@@ -61,12 +69,6 @@ export class HomePage {
 
   constructor() {}
   ngOnInit() {
-    this.sys_interface2 = {
-      a1: this.sys_interface.time2 - 1,
-      a2: this.sys_interface.time1 + 1,
-      a3: this.sys_interface.time3 - 1,
-      a4: this.sys_interface.time2 + 1,
-    };
     this.ESP32_status = document.querySelector("#esp32_status");
     this.relay_card = document.querySelector("#relay_card");
     let connect_to_ws = () => {
@@ -105,6 +107,14 @@ export class HomePage {
             for (let key in dict[cmd]) {
               this.sys_interface[key] = dict[cmd][key];
               console.log("Got SETTINGS");
+              this.sys_interface2 = {
+                a0: 0,
+                a1: this.sys_interface.time2 - 1,
+                a2: this.sys_interface.time2,
+                a3: this.sys_interface.time3 - 1,
+                a4: this.sys_interface.time3,
+                a5: 23,
+              };
               this.relay_card.hidden = false;
             }
           }
@@ -164,16 +174,17 @@ export class HomePage {
     console.log(time1);
     console.log(time2);
     console.log(time3);
-
-    if (time1 > -1) {
+    if (time1 > 0 && time1 + 1 < this.sys_interface2.a2)
       this.sys_interface2.a2 = time1 + 1;
-    }
-    if (time2 > -1) {
+    if (time2 > 1) {
       this.sys_interface2.a1 = time2 - 1;
-      this.sys_interface2.a4 = time2 + 1;
+      if (time2 > 2 && time2 < this.sys_interface2.a3)
+        this.sys_interface2.a4 = time2 + 1;
     }
-    if (time3 > -1) {
-      this.sys_interface2.a3 = time3 - 1;
+    if (time3 > 3) {
+      // this.sys_interface2.a3 = time3 - 1;
+      if (time3 > this.sys_interface2.a3 + 1)
+        this.sys_interface2.a3 = time3 - 1;
     }
   }
   encapsulateJSON(cmd: string, json: string) {
