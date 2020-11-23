@@ -174,17 +174,19 @@ export class HomePage {
     console.log(time1);
     console.log(time2);
     console.log(time3);
-    if (time1 > 0 && time1 + 1 < this.sys_interface2.a2)
+    if (time1 > 0 && time1 + 1 < this.sys_interface.time2)
       this.sys_interface2.a2 = time1 + 1;
-    if (time2 > 1) {
+    if (
+      time2 > 1 &&
+      time2 - 1 > this.sys_interface.time1 &&
+      time2 + 1 < this.sys_interface.time3
+    ) {
       this.sys_interface2.a1 = time2 - 1;
-      if (time2 > 2 && time2 < this.sys_interface2.a3)
-        this.sys_interface2.a4 = time2 + 1;
+      if (time2 == 2) this.sys_interface2.a4 = time2 + 2;
+      else this.sys_interface2.a4 = time2 + 1;
     }
-    if (time3 > 3) {
-      // this.sys_interface2.a3 = time3 - 1;
-      if (time3 > this.sys_interface2.a3 + 1)
-        this.sys_interface2.a3 = time3 - 1;
+    if (time3 > 3 && time3 < 23) {
+      this.sys_interface2.a3 = time3 - 1;
     }
   }
   encapsulateJSON(cmd: string, json: string) {
