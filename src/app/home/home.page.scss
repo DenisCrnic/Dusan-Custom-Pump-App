@@ -25,3 +25,16 @@
 #container a {
   text-decoration: none;
 }
+
+ion-range::part(pin) {
+  transform: translate3d(0px, -24px, 0px) scale(1);
+}
+
+ion-range {
+  --bar-background-active: #00000000;
+  --bar-background-inactive: green;
+}
+
+.slider-card {
+  width: 100%;
+}
