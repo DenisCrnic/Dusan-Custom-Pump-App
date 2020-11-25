@@ -1,3 +1,4 @@
+import { LoadingController, Platform } from "@ionic/angular";
 import { Component } from "@angular/core";
 
 interface Time {
@@ -52,16 +53,80 @@ export class HomePage {
 
   wsServerUrl: string = "ws://192.168.4.1";
   wsServerPort: string = "80";
+  wsState: boolean = false;
   ws: WebSocket;
 
   settings_array: Array<any> = [];
+  isCheckSettings: boolean = false;
   ESP32_alert: string =
-    "Prosim, Dušan/Lea, z napravo v rokah se poveži na dostopno točko visoko tehnološke pumpe.";
+    "Povezava z napravo ni vzpostavljena, prosimo preverite WiFi povezavo.";
   ESP32_status;
   relay_card;
 
-  constructor() {}
+  webSocketLoading: any;
+  settingsLoading: any;
+  settings_alert: string = "";
+  isSettingsOk: boolean = true;
+  subscribe: any;
+  constructor(
+    public platform: Platform,
+    public loadingController: LoadingController
+  ) {
+    this.subscribe = this.platform.backButton.subscribeWithPriority(
+      666666,
+      () => {
+        if (this.constructor.name == "HomePage") {
+          this.appClose();
+        }
+      }
+    );
+  }
+
+  // WebSocket Loader module
+  async presentWebSocketLoading() {
+    console.log("Presenting loader");
+    await this.webSocketLoading.present();
+    const { role, data } = await this.webSocketLoading.onDidDismiss();
+    console.log("WebSocket Loading dismissed!");
+    this.createWebSocketLoading();
+  }
+
+  dismissWebSocketLoading() {
+    this.webSocketLoading.dismiss();
+  }
+
+  async createWebSocketLoading() {
+    this.webSocketLoading = await this.loadingController.create({
+      cssClass: "my-custom-class",
+      message: "Vzpostavljanje povezave ... ",
+      duration: 10000,
+    });
+  }
+
+  // Settings Loader module
+  async presentSettingsLoading() {
+    console.log("Presenting loader");
+    await this.settingsLoading.present();
+    const { role, data } = await this.settingsLoading.onDidDismiss();
+    console.log("Settings Loading dismissed!");
+    this.createSettingsLoading();
+  }
+
+  dismissSettingsLoading() {
+    this.settingsLoading.dismiss();
+  }
+
+  async createSettingsLoading() {
+    this.settingsLoading = await this.loadingController.create({
+      cssClass: "my-custom-class",
+      message: "Posodabljanje nastavitev ... ",
+      duration: 10000,
+    });
+  }
   ngOnInit() {
+    this.createWebSocketLoading();
+    this.createSettingsLoading();
+
     console.log(this.sys_interface2);
     this.ESP32_status = document.querySelector("#esp32_status");
     this.relay_card = document.querySelector("#relay_card");
@@ -73,6 +138,8 @@ export class HomePage {
         console.log("ERROR: " + err);
       }
       this.ws.onopen = (event) => {
+        this.wsState = true;
+        this.dismissWebSocketLoading();
         this.currentTime = new Date();
         this.time_interface = {
           day: this.currentTime.getDate(),
@@ -96,8 +163,9 @@ export class HomePage {
         let dict = JSON.parse(event.data);
         for (let cmd in dict) {
           if (cmd == "SETTINGS") {
-            console.log("DREEEEEEK");
-            console.log(this.sys_interface);
+            if (this.isCheckSettings) {
+              this.checkSettings(dict, cmd);
+            }
             for (let key in dict[cmd]) {
               this.sys_interface[key] = dict[cmd][key];
               console.log("Got SETTINGS");
@@ -113,11 +181,11 @@ export class HomePage {
             }
           }
         }
-        console.log(this.sys_interface);
       };
 
       this.ws.onclose = () => {
         console.log("Closing WebSocket connection");
+
         ESP32_disconnection();
       };
     };
@@ -143,25 +211,69 @@ export class HomePage {
     }
     let ESP32_connection = () => {
       // console.log(this.ESP32_alert.value);
-      this.ESP32_alert = "Na pumpo si povezan, lahko spreminjaš nastavitve";
+      this.ESP32_alert = "Povezava z napravo je vzpostavljena.";
       this.ESP32_status.color = "success";
     };
 
     let ESP32_disconnection = () => {
       console.log();
       this.ESP32_alert =
-        "Prosim, Dušan/Lea, z napravo v rokah se poveži na dostopno točko visoko tehnološke pumpe.";
+        "Povezava z napravo ni vzpostavljena, prosimo preverite WiFi povezavo.";
       this.ESP32_status.color = "danger";
       this.relay_card.hidden = true;
+      this.wsState = false;
+      this.isCheckSettings = false;
+      this.settings_alert = "";
     };
+  }
+
+  checkSettings(dict, cmd) {
+    console.log("Checking settings");
+    let temp_settings: System = {
+      time1: -1,
+      time2: -1,
+      time3: -1,
+      offTime1: -1,
+      offTime2: -1,
+      offTime3: -1,
+      offTime4: -1,
+    };
+
+    for (let key in dict[cmd]) {
+      temp_settings[key] = dict[cmd][key];
+      console.log("Got SETTINGS");
+    }
+    console.log(temp_settings);
+    console.log(this.sys_interface);
+    for (let key in temp_settings) {
+      if (this.sys_interface[key] == temp_settings[key]) {
+        console.log("OK key");
+      } else {
+        console.log("KEy not ok");
+        this.isSettingsOk = false;
+        break;
+      }
+    }
+    if (this.isSettingsOk) {
+      this.isSettingsOk = true;
+      this.settings_alert = "Posodobitve so bile uspešne.";
+      this.dismissSettingsLoading();
+    } else {
+      this.isSettingsOk = false;
+      this.settings_alert =
+        "Posodobitve nastavitev niso bile uspešne, prosimo poskusite ponovno.";
+    }
   }
 
   updateValues() {
     console.log("Updating values");
     console.log(this.sys_interface);
+    this.settings_alert = "";
     this.ws.send(
       this.encapsulateJSON("SETTINGS", JSON.stringify(this.sys_interface))
     );
+    this.presentSettingsLoading();
+    this.isCheckSettings = true;
   }
 
   onTimeChanged(time1: number = -1, time2: number = -1, time3: number = -1) {
@@ -174,6 +286,7 @@ export class HomePage {
       a2: this.range(time2 + 1, 23),
     };
   }
+
   encapsulateJSON(cmd: string, json: string) {
     let encapsulatedData = '{"' + cmd + '": ' + json + "}";
     console.log("Encapsulated data: " + encapsulatedData);
@@ -182,6 +295,21 @@ export class HomePage {
 
   range(start, end) {
     return [...Array(1 + end - start).keys()].map((v) => start + v);
+  }
+
+  // Closes app
+  appClose() {
+    console.log("Closing app");
+    this.ws.close();
+    navigator["app"].exitApp();
+  }
+
+  // Refreshes websocket connection (Closes old one starts a new one)
+  refreshWebsocket() {
+    console.log("Closing Websocket connection");
+    this.ws.close();
+    this.presentWebSocketLoading();
+    console.log("Opening new websocket connection");
   }
   ngOnDestroy() {
     console.log("Destroying object");

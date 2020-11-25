@@ -1,7 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="">
-    <ion-buttons slot="start"> <ion-menu-button></ion-menu-button></ion-buttons>
-    <ion-title slot="start">{{app_name}}</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="appClose()">
+        <ion-icon size="large" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="primary">
+      <ion-button (click)="refreshWebsocket()">
+        <ion-icon size="large" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title class="ion-text-center">{{app_name}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,17 +20,19 @@
     <ion-card-header>
       <ion-card-title
         ><ion-icon
-          class="icon ion-ios-clock-outline"
+          class="icon ion-ios-clock-outline ion-margin-horizontal"
           id="esp32_status"
           color="danger"
           name="radio-button-on-outline"
         ></ion-icon
-        ><span class="text">Pumpa</span>
+        ><ion-label class="ion-margin-left">Pumpa</ion-label>
       </ion-card-title>
     </ion-card-header>
 
     <ion-card-content
-      ><div id="esp32_alert" class="ion-padding-bottom">{{ESP32_alert}}</div>
+      ><ion-label id="esp32_alert" class="ion-padding-bottom"
+        >{{ESP32_alert}}</ion-label
+      >
     </ion-card-content>
   </ion-card>
   <ion-card class="ion-padding" id="relay_card" hidden>
@@ -28,11 +40,14 @@
       <ion-card-title>Stikalo 1 </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      Nastavljanje časovnih mej
+      <ion-label>Nastavljanje časovnih mej</ion-label>
       <ion-grid>
         <ion-row>
-          <ion-col size="4">
-            <ion-card class="ion-padding" color="primary">
+          <ion-col size="4" class="ion-no-margin ion-no-padding">
+            <ion-card
+              class="ion-no-padding ion-margin-vertical"
+              color="primary"
+            >
               <ion-select
                 #interval_1
                 [(ngModel)]="sys_interface.time1"
@@ -49,8 +64,12 @@
               </ion-select>
             </ion-card>
           </ion-col>
-          <ion-col size="4">
-            <ion-card class="ion-padding" color="primary">
+          <ion-label></ion-label>
+          <ion-col size="4" class="ion-no-margin ion-no-padding">
+            <ion-card
+              class="ion-no-padding ion-margin-vertical"
+              color="primary"
+            >
               <ion-select
                 #interval_2
                 [(ngModel)]="sys_interface.time2"
@@ -67,8 +86,11 @@
               </ion-select>
             </ion-card>
           </ion-col>
-          <ion-col size="4">
-            <ion-card class="ion-padding" color="primary">
+          <ion-col size="4" class="ion-no-margin ion-no-padding">
+            <ion-card
+              class="ion-no-padding ion-margin-vertical"
+              color="primary"
+            >
               <ion-select
                 #interval_3
                 [(ngModel)]="sys_interface.time3"
@@ -89,8 +111,10 @@
       </ion-grid>
     </ion-card-content>
     <ion-card-content>
-      Nastavljanje časa neaktivnosti
-      <ion-card class="ion-padding slider-card">
+      <ion-label> Nastavljanje časa neaktivnosti </ion-label>
+      <ion-card
+        class="ion-padding ion-no-margin ion-margin-vertical ion-margin-right slider-card"
+      >
         <ion-label class="ion-padding-bottom">
           <strong>Interval 1:</strong> ({{ interval_3.value }}:00 - {{
           interval_1.value }}:00)
@@ -108,7 +132,9 @@
         >
       </ion-card>
 
-      <ion-card class="ion-padding slider-card">
+      <ion-card
+        class="ion-padding ion-no-margin ion-margin-vertical slider-card"
+      >
         <ion-label class="ion-padding-bottom">
           <strong>Interval 2:</strong> ({{ interval_1.value }}:00 - {{
           interval_2.value }}:00)
@@ -126,7 +152,9 @@
         >
       </ion-card>
 
-      <ion-card class="ion-padding slider-card">
+      <ion-card
+        class="ion-padding ion-no-margin ion-margin-vertical slider-card"
+      >
         <ion-label class="ion-padding-bottom">
           <strong>Interval 3:</strong> ({{ interval_2.value }}:00 - {{
           interval_3.value }}:00)
@@ -149,7 +177,9 @@
     </ion-card-header>
     <ion-card-content>
       Nastavljanje časa aktivnosti
-      <ion-card class="ion-padding slider-card">
+      <ion-card
+        class="ion-padding ion-no-margin ion-margin-vertical slider-card"
+      >
         <ion-range
           [(ngModel)]="sys_interface.offTime4"
           min="0"
@@ -163,14 +193,18 @@
         >
       </ion-card>
     </ion-card-content>
+    <ion-label [ngClass]="(isSettingsOk) ? 'success' : 'fail'"
+      >{{settings_alert}}</ion-label
+    >
     <ion-button (click)="updateValues()" expand="full" class="ion-margin-bottom"
       >Potrdi</ion-button
     >
   </ion-card>
 </ion-content>
 
-<!-- TODO: -Pofiksat sliderje (odpraviti None vrednosti) 
-          - esp se pri parametrizaciji ustavi (?)
-          - DS3231 implementacij
+<!-- TODO:
+          - Testiraj če backbutton zapre aplikacijo na telefonu
+          - Potrdi mora poslati povratno informacijo
+          - DS3231 implementacija
           -
         -->
