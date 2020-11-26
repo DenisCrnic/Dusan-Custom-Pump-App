@@ -51,12 +51,12 @@ export class HomePage {
     a2: this.range(this.sys_interface.time2 + 1, 23),
   };
 
-  wsServerUrl: string = "ws://192.168.4.1";
+  // wsServerUrl: string = "ws://192.168.4.1";
+  wsServerUrl: string = "ws://192.168.4.1/";
   wsServerPort: string = "80";
   wsState: boolean = false;
   ws: WebSocket;
 
-  settings_array: Array<any> = [];
   isCheckSettings: boolean = false;
   ESP32_alert: string =
     "Povezava z napravo ni vzpostavljena, prosimo preverite WiFi povezavo.";
@@ -139,11 +139,13 @@ export class HomePage {
       }
       this.ws.onopen = (event) => {
         this.wsState = true;
-        this.dismissWebSocketLoading();
+        if (this.webSocketLoading) {
+          this.dismissWebSocketLoading();
+        }
         this.currentTime = new Date();
         this.time_interface = {
           day: this.currentTime.getDate(),
-          month: this.currentTime.getMonth(),
+          month: this.currentTime.getMonth() + 1,
           year: this.currentTime.getFullYear(),
           hour: this.currentTime.getHours(),
           minute: this.currentTime.getMinutes(),
@@ -168,7 +170,7 @@ export class HomePage {
             }
             for (let key in dict[cmd]) {
               this.sys_interface[key] = dict[cmd][key];
-              console.log("Got SETTINGS");
+
               this.sys_interface2 = {
                 a0: this.range(0, this.sys_interface.time2 - 1),
                 a1: this.range(
